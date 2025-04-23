@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/axiosInstance";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import carbonLogo from "../assets/Carbonfp-logo.png";
@@ -20,11 +20,6 @@ const EmployeeDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const API = axios.create({
-    baseURL: "http://localhost:5050/api",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
   const logout = () => {
     localStorage.clear();
     navigate("/login");
@@ -32,7 +27,9 @@ const EmployeeDashboard = () => {
 
   const fetchApprovalStatus = async () => {
     try {
-      const res = await API.get("/auth/employee/status");
+      const res = await axios.get("/api/auth/employee/status", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setCompanyApproved(res.data.companyApproved);
       setUserApproved(res.data.employeeStatus === "approved");
     } catch {
@@ -42,11 +39,11 @@ const EmployeeDashboard = () => {
 
   const calculateDistance = async () => {
     try {
-      const res = await API.post("/travel/calculate", {
-        from,
-        to,
-        travelStyle,
-      });
+      const res = await axios.post(
+        "/api/travel/calculate",
+        { from, to, travelStyle },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setDistance(res.data.distanceKm);
       setCredits(res.data.carbonCreditsEarned);
       toast.success("📏 Distance calculated!");
@@ -57,13 +54,17 @@ const EmployeeDashboard = () => {
 
   const logTravel = async () => {
     try {
-      await API.post("/travel/log", {
-        from,
-        to,
-        distanceKm: distance,
-        carbonCreditsEarned: credits,
-        travelStyle,
-      });
+      await axios.post(
+        "/api/travel/log",
+        {
+          from,
+          to,
+          distanceKm: distance,
+          carbonCreditsEarned: credits,
+          travelStyle,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       toast.success("✅ Travel logged!");
       fetchLogs();
       fetchLeaderboard();
@@ -74,7 +75,9 @@ const EmployeeDashboard = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await API.get(`/travel/user/${user.id}`);
+      const res = await axios.get(`/api/travel/user/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setLogs(res.data);
     } catch {
       toast.error("❌ Failed to fetch travel logs");
@@ -83,7 +86,9 @@ const EmployeeDashboard = () => {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await API.get("/company/my/leaderboard");
+      const res = await axios.get("/api/company/my/leaderboard", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setLeaderboard(res.data);
     } catch {
       toast.error("❌ Failed to fetch leaderboard");
@@ -112,7 +117,9 @@ const EmployeeDashboard = () => {
           <p className="text-red-500">Your company is not yet approved by the admin.</p>
         )}
         {!userApproved && (
-          <p className="text-yellow-500 mt-1">You are still pending approval from your employer.</p>
+          <p className="text-yellow-500 mt-1">
+            You are still pending approval from your employer.
+          </p>
         )}
       </div>
     );
