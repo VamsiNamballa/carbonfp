@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import carbonLogo from "../assets/Carbonfp-logo.jpg"; // ✅ Update path if different
 
 const EmployeeDashboard = () => {
   const [travelStyle, setTravelStyle] = useState("Public Transport");
@@ -118,22 +119,34 @@ const EmployeeDashboard = () => {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-10 relative">
-      <button
-        onClick={logout}
-        className="absolute top-4 right-6 text-sm text-red-600 underline"
-      >
-        Logout
-      </button>
+    <div className="min-h-screen bg-gray-50 p-6 max-w-6xl mx-auto space-y-10 relative">
+      {/* 🔴 Logout */}
+      <div className="flex justify-end">
+        <button
+          onClick={logout}
+          className="px-4 py-1 text-sm text-red-600 border border-red-500 rounded hover:bg-red-50 transition"
+        >
+          Logout
+        </button>
+      </div>
 
-      <h1 className="text-3xl font-bold text-center text-green-700">Employee Dashboard</h1>
-
-      {/* 👤 Logged in as */}
-      <p className="text-center text-sm text-gray-600">
-        Logged in as <strong>{user.username}</strong> (<strong>Employee</strong>) </p>
+      {/* ✅ Logo and Title */}
+      <div className="flex flex-col items-center space-y-4">
+        <img
+          src={carbonLogo}
+          alt="CarbonFP Logo"
+          className="w-20 h-20 object-contain rounded-full shadow"
+        />
+        <h1 className="text-4xl font-bold text-green-700">Employee Dashboard</h1>
+        <p className="text-gray-600 text-sm">
+          Logged in as <strong>{user.username}</strong> (<strong>Employee</strong>)
+        </p>
+      </div>
 
       {/* 🚴 Travel Calculator */}
-      <div className="max-w-xl mx-auto space-y-4">
+      <div className="max-w-xl mx-auto bg-white shadow-md rounded-lg p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-gray-700">🚶 Log Your Travel</h2>
+
         <select
           value={travelStyle}
           onChange={(e) => setTravelStyle(e.target.value)}
@@ -148,26 +161,25 @@ const EmployeeDashboard = () => {
           type="text"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          placeholder="📍 From/To"
+          placeholder="📍 Enter Start Location"
           className="w-full p-2 border rounded"
         />
 
         <button
           onClick={calculateDistance}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
           🚗 Calculate Distance
         </button>
 
         {distance && (
           <>
-            <p className="text-center text-gray-700">
-              📍 <strong>{distance} km</strong> &nbsp;|&nbsp; 🎁{" "}
-              <strong>{credits} credits</strong>
+            <p className="text-center text-sm text-gray-700">
+              📍 <strong>{distance} km</strong> | 🎁 <strong>{credits} credits</strong>
             </p>
             <button
               onClick={logTravel}
-              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
             >
               ✅ Log Travel
             </button>
@@ -176,30 +188,30 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* 📜 Travel Logs */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">📜 Travel Logs</h2>
+      <div>
+        <h2 className="text-xl font-semibold mb-3">📜 Travel Logs</h2>
         {logs.length === 0 ? (
           <p className="text-gray-500 italic">No logs yet. Start traveling green 🌿</p>
         ) : (
-          <div className="overflow-x-auto rounded shadow">
-            <table className="min-w-full text-sm border">
-              <thead className="bg-gray-200">
+          <div className="overflow-x-auto bg-white shadow rounded-lg">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-200 text-gray-700">
                 <tr>
-                  <th className="p-2 border">From</th>
-                  <th className="p-2 border">To</th>
-                  <th className="p-2 border">Distance</th>
-                  <th className="p-2 border">Credits</th>
-                  <th className="p-2 border">Date</th>
+                  <th className="p-2 text-left">From</th>
+                  <th className="p-2 text-left">To</th>
+                  <th className="p-2 text-left">Distance</th>
+                  <th className="p-2 text-left">Credits</th>
+                  <th className="p-2 text-left">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log._id} className="bg-white">
-                    <td className="p-2 border">{log.from}</td>
-                    <td className="p-2 border">{log.to}</td>
-                    <td className="p-2 border">{log.distanceKm}</td>
-                    <td className="p-2 border">{log.carbonCreditsEarned}</td>
-                    <td className="p-2 border">
+                  <tr key={log._id} className="odd:bg-white even:bg-gray-50">
+                    <td className="p-2">{log.from}</td>
+                    <td className="p-2">{log.to}</td>
+                    <td className="p-2">{log.distanceKm}</td>
+                    <td className="p-2">{log.carbonCreditsEarned}</td>
+                    <td className="p-2">
                       {new Date(log.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
@@ -215,28 +227,28 @@ const EmployeeDashboard = () => {
       </div>
 
       {/* 🏆 Leaderboard */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">🏆 Company Leaderboard</h2>
+      <div>
+        <h2 className="text-xl font-semibold mb-3">🏆 Company Leaderboard</h2>
         {loading ? (
-          <p className="text-sm text-gray-500">Loading leaderboard...</p>
+          <p className="text-gray-500">Loading leaderboard...</p>
         ) : leaderboard.length === 0 ? (
           <p className="text-gray-500 italic">No contributions yet from your company.</p>
         ) : (
-          <div className="overflow-x-auto rounded shadow">
-            <table className="min-w-full text-sm border">
-              <thead className="bg-yellow-100 text-gray-700">
+          <div className="overflow-x-auto bg-white shadow rounded-lg">
+            <table className="min-w-full text-sm">
+              <thead className="bg-yellow-100 text-gray-800">
                 <tr>
-                  <th className="p-2 border">Rank</th>
-                  <th className="p-2 border">Employee</th>
-                  <th className="p-2 border">Total Credits</th>
+                  <th className="p-2 text-left">Rank</th>
+                  <th className="p-2 text-left">Employee</th>
+                  <th className="p-2 text-left">Total Credits</th>
                 </tr>
               </thead>
               <tbody>
                 {leaderboard.map((entry, index) => (
-                  <tr key={entry.employeeId} className="bg-white">
-                    <td className="p-2 border">#{index + 1}</td>
-                    <td className="p-2 border">{entry.name}</td>
-                    <td className="p-2 border">{entry.totalCredits}</td>
+                  <tr key={entry.employeeId} className="odd:bg-white even:bg-yellow-50">
+                    <td className="p-2">#{index + 1}</td>
+                    <td className="p-2">{entry.name}</td>
+                    <td className="p-2">{entry.totalCredits}</td>
                   </tr>
                 ))}
               </tbody>
