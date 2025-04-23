@@ -179,22 +179,32 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md transition-all duration-300 hover:shadow-2xl">
-        <div className="flex justify-center mb-4">
-          <img src={logo} alt="Carbonfp Logo" className="w-20 h-20 object-contain" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-6 sm:p-8 transition-all duration-300 hover:shadow-2xl">
+        
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <img
+            src={logo}
+            alt="Carbonfp Logo"
+            className="h-16 w-auto object-contain rounded-xl shadow-sm"
+          />
         </div>
 
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-5 tracking-tight">
+  
+        {/* Title */}
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-green-700 mb-4">
           Login to CarbonFP
         </h2>
-
+  
+        {/* Error Message */}
         {error && (
-          <p className="text-red-500 text-sm mb-3 text-center" aria-live="assertive">
+          <p className="text-red-500 text-sm mb-3 text-center font-medium" aria-live="assertive">
             {error}
           </p>
         )}
-
+  
+        {/* Login Form */}
         <LoginForm
           form={form}
           errors={errors}
@@ -204,15 +214,15 @@ export default function Login() {
           showPassword={showPassword}
           setShowPassword={setShowPassword}
         />
-
-        {/* Link to Register Page */}
-        <p className="text-center text-sm text-gray-600 mt-4">
+  
+        {/* Register Link */}
+        <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline font-medium">
+          <Link to="/register" className="text-blue-600 font-semibold hover:underline">
             Register here
           </Link>
         </p>
       </div>
     </div>
-  );
+  );  
 }
