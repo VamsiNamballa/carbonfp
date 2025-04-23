@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../assets/carbonfp-logo.jpg";
+import api from "../api/axiosInstance";
 
 const ROLES = {
   EMPLOYEE: "employee",
@@ -160,7 +160,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5050/api/auth/login", form);
+      const res = await api.post("/auth/login", form);
       const { token, user } = res.data;
 
       localStorage.setItem("token", token);
@@ -181,7 +181,6 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-6 sm:p-8 transition-all duration-300 hover:shadow-2xl">
-        
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <img
@@ -191,19 +190,18 @@ export default function Login() {
           />
         </div>
 
-  
         {/* Title */}
         <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-green-700 mb-4">
           Login to CarbonFP
         </h2>
-  
+
         {/* Error Message */}
         {error && (
           <p className="text-red-500 text-sm mb-3 text-center font-medium" aria-live="assertive">
             {error}
           </p>
         )}
-  
+
         {/* Login Form */}
         <LoginForm
           form={form}
@@ -214,7 +212,7 @@ export default function Login() {
           showPassword={showPassword}
           setShowPassword={setShowPassword}
         />
-  
+
         {/* Register Link */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
@@ -224,5 +222,5 @@ export default function Login() {
         </p>
       </div>
     </div>
-  );  
+  );
 }
