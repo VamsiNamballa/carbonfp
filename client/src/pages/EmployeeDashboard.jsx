@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import carbonLogo from "../assets/Carbonfp-logo.jpg";
+import carbonLogo from "../assets/Carbonfp-logo.png";
 
 const EmployeeDashboard = () => {
   const [travelStyle, setTravelStyle] = useState("Public Transport");
