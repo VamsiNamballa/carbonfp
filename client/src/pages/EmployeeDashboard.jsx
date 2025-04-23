@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import carbonLogo from "../assets/Carbonfp-logo.jpg"; // ✅ Update path if different
+import carbonLogo from "../assets/Carbonfp-logo.jpg";
 
 const EmployeeDashboard = () => {
   const [travelStyle, setTravelStyle] = useState("Public Transport");
@@ -103,7 +103,7 @@ const EmployeeDashboard = () => {
       <div className="p-8 text-center text-lg relative">
         <button
           onClick={logout}
-          className="absolute top-4 right-6 text-sm text-red-600 underline"
+          className="mt-8 px-4 py-1 text-sm text-red-600 border border-red-500 rounded hover:bg-red-50 transition"
         >
           Logout
         </button>
@@ -120,22 +120,12 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 max-w-6xl mx-auto space-y-10 relative">
-      {/* 🔴 Logout */}
-      <div className="flex justify-end">
-        <button
-          onClick={logout}
-          className="px-4 py-1 text-sm text-red-600 border border-red-500 rounded hover:bg-red-50 transition"
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* ✅ Logo and Title */}
-      <div className="flex flex-col items-center space-y-4">
+      {/* ✅ Logo & Title */}
+      <div className="flex flex-col items-center space-y-4 mt-2">
         <img
           src={carbonLogo}
           alt="CarbonFP Logo"
-          className="w-20 h-20 object-contain rounded-full shadow"
+          className="h-24 w-auto object-contain mx-auto rounded-full shadow"
         />
         <h1 className="text-4xl font-bold text-green-700">Employee Dashboard</h1>
         <p className="text-gray-600 text-sm">
@@ -226,7 +216,7 @@ const EmployeeDashboard = () => {
         )}
       </div>
 
-      {/* 🏆 Leaderboard */}
+      {/* 🏆 Leaderboard (Scrollable) */}
       <div>
         <h2 className="text-xl font-semibold mb-3">🏆 Company Leaderboard</h2>
         {loading ? (
@@ -234,7 +224,7 @@ const EmployeeDashboard = () => {
         ) : leaderboard.length === 0 ? (
           <p className="text-gray-500 italic">No contributions yet from your company.</p>
         ) : (
-          <div className="overflow-x-auto bg-white shadow rounded-lg">
+          <div className="overflow-x-auto overflow-y-auto max-h-64 bg-white shadow rounded-lg">
             <table className="min-w-full text-sm">
               <thead className="bg-yellow-100 text-gray-800">
                 <tr>
@@ -255,6 +245,16 @@ const EmployeeDashboard = () => {
             </table>
           </div>
         )}
+      </div>
+
+      {/* 🔴 Logout at Bottom */}
+      <div className="flex justify-center mt-10">
+        <button
+          onClick={logout}
+          className="px-5 py-2 text-sm text-red-600 border border-red-500 rounded hover:bg-red-50 transition"
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
