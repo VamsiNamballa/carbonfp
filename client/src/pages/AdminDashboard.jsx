@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
+import axios from "../api/axiosInstance"; // 👈 using the custom axios instance
 import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import SystemOverview from "../components/Admin/SystemOverview";
-import API from "../api/axiosInstance"; // ✅ Centralized axios instance
 
 const AdminDashboard = () => {
   const [companies, setCompanies] = useState([]);
@@ -12,10 +12,10 @@ const AdminDashboard = () => {
   const fetchAdminData = useCallback(async () => {
     try {
       const [companiesRes, tradesRes] = await Promise.all([
-        API.get("/api/approve?approved=false", {
+        axios.get("/api/approve?approved=false", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        API.get("/api/trades", {
+        axios.get("/api/trades", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
 
   const approveCompany = async (id) => {
     try {
-      await API.patch(
+      await axios.patch(
         `/api/approve/company/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
