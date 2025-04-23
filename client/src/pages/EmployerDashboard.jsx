@@ -15,15 +15,8 @@ const EmployerDashboard = () => {
   const [tradeType, setTradeType] = useState("buy");
   const [tradeAmount, setTradeAmount] = useState("");
   const [employerInfo, setEmployerInfo] = useState({});
-  const [isLoaded, setIsLoaded] = useState(false);
-
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-
-  if (!token) {
-    toast.error("❌ Unauthorized access. Please log in.");
-    navigate("/login");
-  }
 
   const authHeader = {
     headers: { Authorization: `Bearer ${token}` },
@@ -83,9 +76,7 @@ const EmployerDashboard = () => {
       setIncomingRequestsMap(incomingMap);
     } catch (err) {
       toast.error("❌ Error loading dashboard data");
-      console.error("Dashboard Load Error:", err);
-    } finally {
-      setIsLoaded(true);
+      console.error(err);
     }
   };
 
@@ -151,64 +142,80 @@ const EmployerDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  if (!isLoaded) return <div className="p-6 text-center">⏳ Loading Dashboard...</div>;
-
   return (
-    <div className="p-6 space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-blue-700">Employer Dashboard</h1>
-          <p className="text-sm mt-1">
-            Logged in as <strong>{employerInfo?.employerUsername}</strong> from <strong>{employerInfo?.companyName}</strong> ({employerInfo?.companyApproved ? "✅ Approved" : "⏳ Pending"})
-          </p>
+          {employerInfo && (
+            <p className="text-sm text-gray-600 mt-1">
+              Logged in as <strong>{employerInfo.employerUsername}</strong> from <strong>{employerInfo.companyName}</strong> (
+              {employerInfo.companyApproved ? "✅ Approved" : "⏳ Pending"})
+            </p>
+          )}
         </div>
-        <button onClick={logout} className="bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+        <button onClick={logout} className="bg-red-600 text-white px-4 py-2 rounded-md">
+          Logout
+        </button>
       </div>
 
       {/* Total Credits */}
-      <div className="bg-white shadow p-4 rounded">
-        <h2 className="text-xl font-semibold">Total Company Credits</h2>
-        <p className="text-2xl font-bold text-green-600">{credits}</p>
+      <div className="bg-white shadow p-4 rounded-lg mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Total Company Credits</h2>
+        <p className="text-2xl text-green-700 font-bold">{credits}</p>
       </div>
 
-      {/* Trade Form */}
-      <div className="bg-white shadow p-4 rounded">
-        <h2 className="text-xl font-semibold">Buy / Sell Carbon Credits</h2>
-        <form onSubmit={createTrade} className="flex gap-4 mt-2">
+      {/* Buy/Sell Carbon Credits */}
+      <div className="bg-white shadow p-4 rounded-lg mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Buy / Sell Carbon Credits</h2>
+        <form onSubmit={createTrade} className="flex gap-4 flex-wrap">
           <select value={tradeType} onChange={(e) => setTradeType(e.target.value)} className="border px-3 py-2 rounded">
             <option value="buy">Buy</option>
             <option value="sell">Sell</option>
           </select>
-          <input type="number" value={tradeAmount} onChange={(e) => setTradeAmount(e.target.value)} placeholder="Amount" className="border px-3 py-2 rounded" />
-          <button type="submit" className="bg-blue-700 text-white px-4 py-2 rounded">Post {tradeType === "buy" ? "Buy" : "Sell"} Request</button>
+          <input
+            type="number"
+            placeholder="Amount"
+            value={tradeAmount}
+            onChange={(e) => setTradeAmount(e.target.value)}
+            className="border px-3 py-2 rounded"
+          />
+          <button type="submit" className="bg-blue-700 text-white px-4 py-2 rounded">
+            Post {tradeType === "buy" ? "Buy" : "Sell"} Request
+          </button>
         </form>
       </div>
 
       {/* Leaderboard */}
-      <div className="bg-white shadow p-4 rounded">
-        <h2 className="text-xl font-semibold">🏆 Company Leaderboard</h2>
+      <div className="bg-white shadow p-4 rounded-lg mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">🏆 Company Leaderboard</h2>
         {leaderboard.length === 0 ? (
           <p className="text-gray-500 italic">No contributions yet from your company.</p>
         ) : (
-          <table className="min-w-full text-sm border mt-2">
-            <thead className="bg-yellow-100">
-              <tr><th className="p-2 border">Rank</th><th className="p-2 border">Employee</th><th className="p-2 border">Total Credits</th></tr>
-            </thead>
-            <tbody>
-              {leaderboard.map((entry, index) => (
-                <tr key={entry._id} className="bg-white">
-                  <td className="p-2 border">#{index + 1}</td>
-                  <td className="p-2 border">{entry.username}</td>
-                  <td className="p-2 border">{entry.carbonCredits}</td>
+          <div className="overflow-x-auto rounded shadow">
+            <table className="min-w-full text-sm border">
+              <thead className="bg-yellow-100 text-gray-700">
+                <tr>
+                  <th className="p-2 border">Rank</th>
+                  <th className="p-2 border">Employee</th>
+                  <th className="p-2 border">Total Credits</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {leaderboard.map((entry, index) => (
+                  <tr key={entry._id} className="bg-white">
+                    <td className="p-2 border">#{index + 1}</td>
+                    <td className="p-2 border">{entry.username}</td>
+                    <td className="p-2 border">{entry.carbonCredits}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* All other dashboard sections preserved: employee approvals, market ads, incoming/outgoing trades... */}
-
+      {/* Remaining sections will be re-added next */}
     </div>
   );
 };
