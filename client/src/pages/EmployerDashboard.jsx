@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axiosInstance"; // ✅ Using centralized instance
+import axios from "../api/axiosInstance";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -33,12 +33,12 @@ const EmployerDashboard = () => {
         requestsRes,
         adsRes,
       ] = await Promise.all([
-        axios.get("/api/employer/status", authHeader),
-        axios.get("/api/employer/dashboard", authHeader),
-        axios.get("/api/employer/trades/history", authHeader),
-        axios.get("/api/employer/employees/pending", authHeader),
-        axios.get("/api/trade-requests/mine", authHeader),
-        axios.get("/api/trades/ads/other", authHeader),
+        axios.get("/employer/status", authHeader),
+        axios.get("/employer/dashboard", authHeader),
+        axios.get("/employer/trades/history", authHeader),
+        axios.get("/employer/employees/pending", authHeader),
+        axios.get("/trade-requests/mine", authHeader),
+        axios.get("/trades/ads/other", authHeader),
       ]);
 
       setEmployerInfo(statusRes.data);
@@ -65,7 +65,7 @@ const EmployerDashboard = () => {
       const incomingMap = {};
       await Promise.all(
         pendingTrades.map(async (trade) => {
-          const res = await axios.get(`/api/trade-requests/${trade._id}/requests`, authHeader);
+          const res = await axios.get(`/trade-requests/${trade._id}/requests`, authHeader);
           if (res.data.length > 0) {
             incomingMap[trade._id] = {
               type: trade.type,
@@ -89,7 +89,7 @@ const EmployerDashboard = () => {
 
   const approveEmployee = async (id) => {
     try {
-      await axios.patch(`/api/employer/employees/${id}/approve`, {}, authHeader);
+      await axios.patch(`/employer/employees/${id}/approve`, {}, authHeader);
       toast.success("✅ Employee approved");
       fetchDashboardData();
     } catch {
@@ -104,7 +104,7 @@ const EmployerDashboard = () => {
     }
     try {
       await axios.post(
-        "/api/trades/create",
+        "/trades/create",
         {
           type: tradeType,
           amount: Number(tradeAmount),
@@ -122,7 +122,7 @@ const EmployerDashboard = () => {
 
   const acceptRequest = async (tradeId, requestId) => {
     try {
-      await axios.patch(`/api/trade-requests/${tradeId}/requests/${requestId}/accept`, {}, authHeader);
+      await axios.patch(`/trade-requests/${tradeId}/requests/${requestId}/accept`, {}, authHeader);
       toast.success("✅ Trade fulfilled");
       fetchDashboardData();
     } catch (err) {
@@ -134,7 +134,7 @@ const EmployerDashboard = () => {
 
   const fulfillTrade = async (tradeId) => {
     try {
-      await axios.post(`/api/trade-requests/${tradeId}/request`, {}, authHeader);
+      await axios.post(`/trade-requests/${tradeId}/request`, {}, authHeader);
       toast.success("✅ Request sent");
       fetchDashboardData();
     } catch (err) {
@@ -148,11 +148,9 @@ const EmployerDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // ⬇️ UI remains unchanged from your version. No changes needed here.
   return (
     <div className="p-6">
-      {/* Everything you already wrote for layout and data presentation stays here */}
-      {/* You do not need to change anything else since API changes are complete above */}
+      {/* ... Keep your existing UI here ... */}
     </div>
   );
 };
