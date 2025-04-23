@@ -128,6 +128,10 @@ const EmployeeDashboard = () => {
 
       <h1 className="text-3xl font-bold text-center text-green-700">Employee Dashboard</h1>
 
+      {/* 👤 Logged in as */}
+      <p className="text-center text-sm text-gray-600">
+        Logged in as <strong>{user.username}</strong> (<strong>Employee</strong>) </p>
+
       {/* 🚴 Travel Calculator */}
       <div className="max-w-xl mx-auto space-y-4">
         <select
