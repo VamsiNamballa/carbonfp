@@ -1,8 +1,17 @@
-import { useEffect, useState } from "react";
-import axios from "../api/axiosInstance";
+import React, { useEffect, useState } from "react";
+import axios from "../../api/axiosInstance"; // adjust if your structure is different
 
-const SystemOverview = () => {
-  const [stats, setStats] = useState({
+interface Stats {
+  totalCompanies: number;
+  approvedCompanies: number;
+  pendingCompanies: number;
+  totalTrades: number;
+  totalCredits: number;
+  pendingEmployers: number;
+}
+
+const SystemOverview: React.FC = () => {
+  const [stats, setStats] = useState<Stats>({
     totalCompanies: 0,
     approvedCompanies: 0,
     pendingCompanies: 0,
@@ -37,7 +46,7 @@ const SystemOverview = () => {
   );
 };
 
-const StatCard = ({ title, value }: { title: string; value: number }) => (
+const StatCard: React.FC<{ title: string; value: number }> = ({ title, value }) => (
   <div className="bg-white shadow p-4 rounded text-center">
     <h3 className="text-gray-600 text-sm">{title}</h3>
     <p className="text-xl font-bold text-green-700">{value}</p>
