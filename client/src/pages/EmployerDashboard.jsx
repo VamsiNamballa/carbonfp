@@ -32,13 +32,32 @@ const EmployerDashboard = () => {
         requestsRes,
         adsRes,
       ] = await Promise.all([
-        axios.get("/employer/status", authHeader),
-        axios.get("/employer/dashboard", authHeader),
-        axios.get("/employer/trades/history", authHeader),
-        axios.get("/employer/employees/pending", authHeader),
-        axios.get("/trade-requests/mine", authHeader),
-        axios.get("/trades/ads/other", authHeader),
+        axios.get("/employer/status", authHeader).then((res) => {
+          console.log("✅ statusRes", res.data);
+          return res;
+        }),
+        axios.get("/employer/dashboard", authHeader).then((res) => {
+          console.log("✅ dashboardRes", res.data);
+          return res;
+        }),
+        axios.get("/employer/trades/history", authHeader).then((res) => {
+          console.log("✅ tradesRes", res.data);
+          return res;
+        }),
+        axios.get("/employer/employees/pending", authHeader).then((res) => {
+          console.log("✅ pendingRes", res.data);
+          return res;
+        }),
+        axios.get("/trade-requests/mine", authHeader).then((res) => {
+          console.log("✅ requestsRes", res.data);
+          return res;
+        }),
+        axios.get("/trades/ads/other", authHeader).then((res) => {
+          console.log("✅ adsRes", res.data);
+          return res;
+        }),
       ]);
+      
 
       setEmployerInfo(statusRes.data);
       setCredits(dashboardRes.data.totalCredits);
