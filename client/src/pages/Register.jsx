@@ -42,7 +42,7 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-50 to-green-100 px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold mb-6 text-center text-green-700">🌱 Register</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-green-700">🌱 Register for CarbonFP</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Role Selection */}
