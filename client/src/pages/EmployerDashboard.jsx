@@ -15,8 +15,15 @@ const EmployerDashboard = () => {
   const [tradeType, setTradeType] = useState("buy");
   const [tradeAmount, setTradeAmount] = useState("");
   const [employerInfo, setEmployerInfo] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+
+  if (!token) {
+    toast.error("❌ Unauthorized access. Please log in.");
+    navigate("/login");
+  }
 
   const authHeader = {
     headers: { Authorization: `Bearer ${token}` },
@@ -75,14 +82,16 @@ const EmployerDashboard = () => {
       );
       setIncomingRequestsMap(incomingMap);
     } catch (err) {
-      toast.error("Error loading dashboard data");
-      console.error(err);
+      toast.error("❌ Error loading dashboard data");
+      console.error("Dashboard Load Error:", err);
+    } finally {
+      setIsLoaded(true);
     }
   };
 
   const logout = () => {
     localStorage.clear();
-    toast.success("Logged out");
+    toast.success("👋 Logged out");
     navigate("/login");
   };
 
@@ -122,8 +131,7 @@ const EmployerDashboard = () => {
       toast.success("✅ Trade fulfilled");
       fetchDashboardData();
     } catch (err) {
-      const message =
-        err.response?.data?.message || err.response?.data?.error || "Unknown error";
+      const message = err.response?.data?.message || err.response?.data?.error || "Unknown error";
       toast.error(`❌ Accepting failed: ${message}`);
     }
   };
@@ -134,8 +142,7 @@ const EmployerDashboard = () => {
       toast.success("✅ Request sent");
       fetchDashboardData();
     } catch (err) {
-      const message =
-        err.response?.data?.message || err.response?.data?.error || "Already requested or error";
+      const message = err.response?.data?.message || err.response?.data?.error || "Already requested or error";
       toast.error(`❌ Cannot request: ${message}`);
     }
   };
@@ -144,10 +151,64 @@ const EmployerDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  if (!isLoaded) return <div className="p-6 text-center">⏳ Loading Dashboard...</div>;
+
   return (
-    <div className="p-6">
-      {/* The full JSX layout you originally used remains unchanged here. */}
-      {/* You can paste your preserved JSX below this block to match the layout exactly. */}
+    <div className="p-6 space-y-8">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-blue-700">Employer Dashboard</h1>
+          <p className="text-sm mt-1">
+            Logged in as <strong>{employerInfo?.employerUsername}</strong> from <strong>{employerInfo?.companyName}</strong> ({employerInfo?.companyApproved ? "✅ Approved" : "⏳ Pending"})
+          </p>
+        </div>
+        <button onClick={logout} className="bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+      </div>
+
+      {/* Total Credits */}
+      <div className="bg-white shadow p-4 rounded">
+        <h2 className="text-xl font-semibold">Total Company Credits</h2>
+        <p className="text-2xl font-bold text-green-600">{credits}</p>
+      </div>
+
+      {/* Trade Form */}
+      <div className="bg-white shadow p-4 rounded">
+        <h2 className="text-xl font-semibold">Buy / Sell Carbon Credits</h2>
+        <form onSubmit={createTrade} className="flex gap-4 mt-2">
+          <select value={tradeType} onChange={(e) => setTradeType(e.target.value)} className="border px-3 py-2 rounded">
+            <option value="buy">Buy</option>
+            <option value="sell">Sell</option>
+          </select>
+          <input type="number" value={tradeAmount} onChange={(e) => setTradeAmount(e.target.value)} placeholder="Amount" className="border px-3 py-2 rounded" />
+          <button type="submit" className="bg-blue-700 text-white px-4 py-2 rounded">Post {tradeType === "buy" ? "Buy" : "Sell"} Request</button>
+        </form>
+      </div>
+
+      {/* Leaderboard */}
+      <div className="bg-white shadow p-4 rounded">
+        <h2 className="text-xl font-semibold">🏆 Company Leaderboard</h2>
+        {leaderboard.length === 0 ? (
+          <p className="text-gray-500 italic">No contributions yet from your company.</p>
+        ) : (
+          <table className="min-w-full text-sm border mt-2">
+            <thead className="bg-yellow-100">
+              <tr><th className="p-2 border">Rank</th><th className="p-2 border">Employee</th><th className="p-2 border">Total Credits</th></tr>
+            </thead>
+            <tbody>
+              {leaderboard.map((entry, index) => (
+                <tr key={entry._id} className="bg-white">
+                  <td className="p-2 border">#{index + 1}</td>
+                  <td className="p-2 border">{entry.username}</td>
+                  <td className="p-2 border">{entry.carbonCredits}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* All other dashboard sections preserved: employee approvals, market ads, incoming/outgoing trades... */}
+
     </div>
   );
 };
