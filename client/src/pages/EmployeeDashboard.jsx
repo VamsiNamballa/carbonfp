@@ -1,8 +1,8 @@
+// src/pages/EmployeeDashboard.jsx
 import { useEffect, useState } from "react";
-import axios from "../api/axiosInstance";
+import axios from "../api/axiosInstance"; // ✅ centralized axios using VITE_API_URL
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import carbonLogo from "../assets/Carbonfp-logo.png";
 
 const EmployeeDashboard = () => {
   const [travelStyle, setTravelStyle] = useState("Public Transport");
@@ -20,6 +20,10 @@ const EmployeeDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
+  const authHeader = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+
   const logout = () => {
     localStorage.clear();
     navigate("/login");
@@ -27,9 +31,7 @@ const EmployeeDashboard = () => {
 
   const fetchApprovalStatus = async () => {
     try {
-      const res = await axios.get("/api/auth/employee/status", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get("/auth/employee/status", authHeader);
       setCompanyApproved(res.data.companyApproved);
       setUserApproved(res.data.employeeStatus === "approved");
     } catch {
@@ -40,9 +42,9 @@ const EmployeeDashboard = () => {
   const calculateDistance = async () => {
     try {
       const res = await axios.post(
-        "/api/travel/calculate",
+        "/travel/calculate",
         { from, to, travelStyle },
-        { headers: { Authorization: `Bearer ${token}` } }
+        authHeader
       );
       setDistance(res.data.distanceKm);
       setCredits(res.data.carbonCreditsEarned);
@@ -55,15 +57,9 @@ const EmployeeDashboard = () => {
   const logTravel = async () => {
     try {
       await axios.post(
-        "/api/travel/log",
-        {
-          from,
-          to,
-          distanceKm: distance,
-          carbonCreditsEarned: credits,
-          travelStyle,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        "/travel/log",
+        { from, to, distanceKm: distance, carbonCreditsEarned: credits, travelStyle },
+        authHeader
       );
       toast.success("✅ Travel logged!");
       fetchLogs();
@@ -75,9 +71,7 @@ const EmployeeDashboard = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await axios.get(`/api/travel/user/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(`/travel/user/${user.id}`, authHeader);
       setLogs(res.data);
     } catch {
       toast.error("❌ Failed to fetch travel logs");
@@ -86,9 +80,7 @@ const EmployeeDashboard = () => {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await axios.get("/api/company/my/leaderboard", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get("/company/my/leaderboard", authHeader);
       setLeaderboard(res.data);
     } catch {
       toast.error("❌ Failed to fetch leaderboard");
@@ -105,51 +97,41 @@ const EmployeeDashboard = () => {
 
   if (!companyApproved || !userApproved) {
     return (
-      <div className="p-8 text-center text-lg relative min-h-screen bg-white">
+      <div className="p-8 text-center text-lg relative">
         <button
           onClick={logout}
-          className="mt-8 px-4 py-2 bg-red-100 text-red-600 rounded shadow hover:bg-red-200 transition"
+          className="absolute top-4 right-6 text-sm text-red-600 underline"
         >
           Logout
         </button>
-        <h1 className="text-2xl font-bold text-red-600 mt-4">🚫 Access Restricted</h1>
+        <h1 className="text-2xl font-bold text-red-600 mb-2">🚫 Access Restricted</h1>
         {!companyApproved && (
           <p className="text-red-500">Your company is not yet approved by the admin.</p>
         )}
         {!userApproved && (
-          <p className="text-yellow-500 mt-1">
-            You are still pending approval from your employer.
-          </p>
+          <p className="text-yellow-500 mt-1">You are still pending approval from your employer.</p>
         )}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white p-4 sm:p-6 max-w-5xl mx-auto">
-      {/* Logo and Title */}
-      <div className="flex flex-col items-center space-y-4 mt-4 mb-8">
-        <img
-          src={carbonLogo}
-          alt="CarbonFP Logo"
-          className="h-20 w-auto object-contain drop-shadow-md"
-        />
-        <h1 className="text-3xl sm:text-4xl font-bold text-green-700">Employee Dashboard</h1>
-        <p className="text-gray-600 text-sm sm:text-base">
-          Logged in as <strong>{user.username}</strong> (<strong>Employee</strong>)
-        </p>
-      </div>
+    <div className="p-6 max-w-6xl mx-auto space-y-10 relative">
+      <button
+        onClick={logout}
+        className="absolute top-4 right-6 text-sm text-red-600 underline"
+      >
+        Logout
+      </button>
 
-      {/* Travel Logger */}
-      <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-orange-600 flex items-center gap-2">
-          🚶 Log Your Travel
-        </h2>
+      <h1 className="text-3xl font-bold text-center text-green-700">Employee Dashboard</h1>
 
+      {/* 🚴 Travel Calculator */}
+      <div className="max-w-xl mx-auto space-y-4">
         <select
           value={travelStyle}
           onChange={(e) => setTravelStyle(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-2 border rounded"
         >
           <option value="Work From Home">🏠 Work From Home</option>
           <option value="Public Transport">🚌 Public Transport</option>
@@ -160,25 +142,25 @@ const EmployeeDashboard = () => {
           type="text"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          placeholder="📍 Enter Start Location"
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+          placeholder="📍 From/To"
+          className="w-full p-2 border rounded"
         />
 
         <button
           onClick={calculateDistance}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           🚗 Calculate Distance
         </button>
 
         {distance && (
           <>
-            <p className="text-center text-gray-600 text-sm">
-              📍 <strong>{distance} km</strong> | 🎁 <strong>{credits} credits</strong>
+            <p className="text-center text-gray-700">
+              📍 <strong>{distance} km</strong> &nbsp;|&nbsp; 🎁 <strong>{credits} credits</strong>
             </p>
             <button
               onClick={logTravel}
-              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
             >
               ✅ Log Travel
             </button>
@@ -186,31 +168,31 @@ const EmployeeDashboard = () => {
         )}
       </div>
 
-      {/* Travel Logs */}
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold text-yellow-600 mb-3">📜 Travel Logs</h2>
+      {/* 📜 Travel Logs */}
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold">📜 Travel Logs</h2>
         {logs.length === 0 ? (
           <p className="text-gray-500 italic">No logs yet. Start traveling green 🌿</p>
         ) : (
-          <div className="overflow-x-auto bg-white shadow rounded-lg">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-100 text-gray-700">
+          <div className="overflow-x-auto rounded shadow">
+            <table className="min-w-full text-sm border">
+              <thead className="bg-gray-200">
                 <tr>
-                  <th className="p-2 text-left">From</th>
-                  <th className="p-2 text-left">To</th>
-                  <th className="p-2 text-left">Distance</th>
-                  <th className="p-2 text-left">Credits</th>
-                  <th className="p-2 text-left">Date</th>
+                  <th className="p-2 border">From</th>
+                  <th className="p-2 border">To</th>
+                  <th className="p-2 border">Distance</th>
+                  <th className="p-2 border">Credits</th>
+                  <th className="p-2 border">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log._id} className="odd:bg-white even:bg-gray-50 hover:bg-green-50">
-                    <td className="p-2">{log.from}</td>
-                    <td className="p-2">{log.to}</td>
-                    <td className="p-2">{log.distanceKm}</td>
-                    <td className="p-2">{log.carbonCreditsEarned}</td>
-                    <td className="p-2">
+                  <tr key={log._id} className="bg-white">
+                    <td className="p-2 border">{log.from}</td>
+                    <td className="p-2 border">{log.to}</td>
+                    <td className="p-2 border">{log.distanceKm}</td>
+                    <td className="p-2 border">{log.carbonCreditsEarned}</td>
+                    <td className="p-2 border">
                       {new Date(log.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
@@ -225,48 +207,35 @@ const EmployeeDashboard = () => {
         )}
       </div>
 
-      {/* Leaderboard */}
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold text-amber-700 mb-3">🏆 Company Leaderboard</h2>
+      {/* 🏆 Leaderboard */}
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold">🏆 Company Leaderboard</h2>
         {loading ? (
-          <p className="text-gray-500">Loading leaderboard...</p>
+          <p className="text-sm text-gray-500">Loading leaderboard...</p>
         ) : leaderboard.length === 0 ? (
           <p className="text-gray-500 italic">No contributions yet from your company.</p>
         ) : (
-          <div className="overflow-x-auto max-h-64 overflow-y-auto bg-white shadow rounded-lg">
-            <table className="min-w-full text-sm">
-              <thead className="bg-yellow-100 text-gray-800">
+          <div className="overflow-x-auto rounded shadow">
+            <table className="min-w-full text-sm border">
+              <thead className="bg-yellow-100 text-gray-700">
                 <tr>
-                  <th className="p-2 text-left">Rank</th>
-                  <th className="p-2 text-left">Employee</th>
-                  <th className="p-2 text-left">Total Credits</th>
+                  <th className="p-2 border">Rank</th>
+                  <th className="p-2 border">Employee</th>
+                  <th className="p-2 border">Total Credits</th>
                 </tr>
               </thead>
               <tbody>
                 {leaderboard.map((entry, index) => (
-                  <tr
-                    key={entry.employeeId}
-                    className="odd:bg-white even:bg-yellow-50 hover:bg-yellow-100"
-                  >
-                    <td className="p-2 font-medium">#{index + 1}</td>
-                    <td className="p-2">{entry.name}</td>
-                    <td className="p-2">{entry.totalCredits}</td>
+                  <tr key={entry.employeeId} className="bg-white">
+                    <td className="p-2 border">#{index + 1}</td>
+                    <td className="p-2 border">{entry.name}</td>
+                    <td className="p-2 border">{entry.totalCredits}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
-      </div>
-
-      {/* Logout Button */}
-      <div className="flex justify-center mt-12">
-        <button
-          onClick={logout}
-          className="px-5 py-2 text-sm text-red-600 border border-red-500 rounded hover:bg-red-100 transition"
-        >
-          🔓 Logout
-        </button>
       </div>
     </div>
   );
