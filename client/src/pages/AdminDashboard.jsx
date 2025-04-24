@@ -49,7 +49,6 @@ const AdminDashboard = () => {
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Title */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-blue-700 mb-2">Admin Dashboard</h1>
             <p className="text-gray-600">Logged in as: <strong>Admin</strong> — Admin</p>
           </div>
 
