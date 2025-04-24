@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import axios from "../api/axiosInstance"; // 👈 using the custom axios instance
+import axios from "../api/axiosInstance"; // Uses environment-compatible baseURL
 import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import SystemOverview from "../components/Admin/SystemOverview";
@@ -9,35 +9,31 @@ const AdminDashboard = () => {
   const [trades, setTrades] = useState([]);
   const token = localStorage.getItem("token");
 
+  const authHeader = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+
   const fetchAdminData = useCallback(async () => {
     try {
       const [companiesRes, tradesRes] = await Promise.all([
-        axios.get("/api/approve?approved=false", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get("/api/trades", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        axios.get("/approve?approved=false", authHeader),
+        axios.get("/trades", authHeader),
       ]);
 
       setCompanies(companiesRes.data);
       setTrades(tradesRes.data.reverse());
     } catch (err) {
       console.error("Failed to fetch admin data:", err.message);
-      toast.error("Error loading admin data");
+      toast.error("❌ Error loading admin data");
     }
   }, [token]);
 
   const approveCompany = async (id) => {
     try {
-      await axios.patch(
-        `/api/approve/company/${id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.patch(`/approve/company/${id}`, {}, authHeader);
       toast.success("✅ Company approved");
       fetchAdminData();
-    } catch (err) {
+    } catch {
       toast.error("❌ Company approval failed");
     }
   };
@@ -53,7 +49,7 @@ const AdminDashboard = () => {
         <h1 className="text-4xl font-bold text-blue-700 mb-10">Admin Dashboard</h1>
 
         {/* 📊 System Overview */}
-        <SystemOverview token={token} />
+        <SystemOverview />
 
         {/* 🏢 Pending Companies */}
         <section className="mb-12 mt-10">
@@ -101,16 +97,20 @@ const AdminDashboard = () => {
                     <tr key={t._id} className="border-t">
                       <td className="p-3">{t.type}</td>
                       <td className="p-3">{t.amount}</td>
-                      <td
-                        className={`p-3 ${
-                          t.status === "completed" ? "text-green-600" : "text-yellow-600"
-                        }`}
-                      >
+                      <td className={`p-3 ${t.status === "completed" ? "text-green-600" : "text-yellow-600"}`}>
                         {t.status}
                       </td>
                       <td className="p-3">{t.fromCompany || "-"}</td>
                       <td className="p-3">{t.toCompany || "-"}</td>
-                      <td className="p-3">{new Date(t.updatedAt).toLocaleString()}</td>
+                      <td className="p-3">
+                        {new Date(t.updatedAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
