@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../assets/carbonfp-logo.jpg"; // ✅ Update path if necessary
+import logo from "../assets/cfp-pogo.jpg"; // ✅ Update path if necessary
 
 const Navbar = () => {
   const navigate = useNavigate();
