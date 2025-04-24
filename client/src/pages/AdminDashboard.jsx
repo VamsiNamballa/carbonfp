@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-gray-50 pt-32 pb-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Title */}
           <div className="text-center">
