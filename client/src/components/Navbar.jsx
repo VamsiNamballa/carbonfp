@@ -11,13 +11,6 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const getPageTitle = () => {
-    if (location.pathname.includes("admin")) return "Admin Dashboard";
-    if (location.pathname.includes("employer")) return "Employer Dashboard";
-    if (location.pathname.includes("employee")) return "Employee Dashboard";
-    return "Dashboard";
-  };
-
   const formatRole = (role) =>
     role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
@@ -33,10 +26,7 @@ const Navbar = () => {
         {/* 🔹 Branding */}
         <span className="text-xl font-bold tracking-wide">🌿 CarbonFP</span>
 
-        {/* 🔸 Page Title */}
-        <h2 className="text-base md:text-lg font-semibold text-center w-full md:w-auto">
-          {getPageTitle()}
-        </h2>
+        {/* 🟢 Removed Page Title */}
 
         {/* 🔸 User Info + Logout */}
         <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4 text-sm md:text-base">
