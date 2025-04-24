@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import logo from "../assets/carbonfp-logo.png"; // ✅ Adjust the path if it's different
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -23,10 +24,15 @@ const Navbar = () => {
   return (
     <header className="bg-green-700 text-white shadow-md fixed top-0 w-full z-50 px-4 py-2">
       <div className="flex justify-between items-center flex-wrap gap-4">
-        {/* 🔹 Branding */}
-        <span className="text-xl font-bold tracking-wide">🌿 CarbonFP</span>
-
-        {/* 🟢 Removed Page Title */}
+        {/* 🔹 Logo & Branding */}
+        <div className="flex items-center gap-2">
+          <img
+            src={logo}
+            alt="CarbonFP Logo"
+            className="h-10 w-10 rounded-full object-cover"
+          />
+          <span className="text-xl font-bold tracking-wide">CarbonFP</span>
+        </div>
 
         {/* 🔸 User Info + Logout */}
         <div className="flex flex-col md:flex-row items-center gap-1 md:gap-4 text-sm md:text-base">
