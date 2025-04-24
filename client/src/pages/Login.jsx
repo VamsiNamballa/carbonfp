@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import logo from "../assets/carbonfp-logo.jpg";
+import logo from "../assets/cfp-pogo.jpg";
 import api from "../api/axiosInstance";
 
 const ROLES = {
