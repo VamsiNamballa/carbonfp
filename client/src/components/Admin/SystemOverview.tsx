@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axiosInstance"; // adjust if your structure is different
+import axios from "../../api/axiosInstance"; // Adjust if your actual path differs
 
 interface Stats {
   totalCompanies: number;
@@ -22,6 +22,8 @@ const SystemOverview: React.FC = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    if (!token) return;
+
     axios
       .get("/admin/stats", {
         headers: { Authorization: `Bearer ${token}` },
